@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -935,18 +935,18 @@
 
     const users = {
 
-        "qwe": {
-            password: "qwe@123",
+        "RITIK123": {
+            password: "Ritik@123",
             link: "https://rishavi1.github.io/nova-coin/all/ritik/index.html"
         },
 
-        "asd": {
-            password: "asd@123",
+        "PRITHVI123": {
+            password: "Prithvi@123",
             link: "https://rishavi1.github.io/nova-coin/all/prithvi/index.html"
         },
 
-        "zxc": {
-            password: "zxc@123",
+        "RISHAV123": {
+            password: "Rishav@123",
             link: "https://rishavi1.github.io/nova-coin/all/rishav/index.html"
         },
 
@@ -960,12 +960,14 @@
 
     function login() {
 
+        // Login IDs are stored as uppercase keys, so normalize user input
+        // to uppercase before looking up an account.
         const id =
             document
             .getElementById("loginId")
             .value
             .trim()
-            .toLowerCase();
+            .toUpperCase();
 
         const password =
             document
@@ -1013,8 +1015,26 @@
          * USER DOES NOT EXIST
          */
 
-        const savedUsers = JSON.parse(localStorage.getItem("novacoinUsers") || "{}");
-        const accountUsers = { ...users, ...savedUsers };
+        let savedUsers = {};
+        try {
+            savedUsers = JSON.parse(localStorage.getItem("novacoinUsers") || "{}");
+            if (!savedUsers || typeof savedUsers !== "object" || Array.isArray(savedUsers)) {
+                savedUsers = {};
+            }
+        } catch (error) {
+            savedUsers = {};
+        }
+
+        // Normalize saved registration IDs too, so case differences such as
+        // rishav123, Rishav123, and RISHAV123 do not cause false failures.
+        const normalizedSavedUsers = {};
+        Object.keys(savedUsers).forEach(function(savedId) {
+            const user = savedUsers[savedId];
+            if (user && typeof user === "object") {
+                normalizedSavedUsers[savedId.trim().toUpperCase()] = user;
+            }
+        });
+        const accountUsers = { ...users, ...normalizedSavedUsers };
 
         if (!accountUsers[id]) {
 
