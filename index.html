@@ -1,0 +1,1125 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>NOVACOIN | Sign In</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            overflow: hidden;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 10% 20%,
+                    #1d5cff 0%,
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 90% 80%,
+                    #761dff 0%,
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    #020b2d,
+                    #071858,
+                    #10145c
+                );
+
+            position: relative;
+        }
+
+
+        /* =========================
+           BACKGROUND 3D SHAPES
+        ========================== */
+
+        .circle {
+
+            position: absolute;
+
+            width: 180px;
+            height: 180px;
+
+            border-radius: 50%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #24c6ff,
+                    #254bff,
+                    #9b2cff
+                );
+
+            box-shadow:
+                0 0 50px rgba(0, 153, 255, .5),
+                inset -20px -20px 40px rgba(0,0,0,.25);
+
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .circle.one {
+
+            top: -70px;
+            right: -50px;
+
+        }
+
+        .circle.two {
+
+            width: 90px;
+            height: 90px;
+
+            left: 30px;
+            bottom: 80px;
+
+            animation-delay: 2s;
+        }
+
+
+        /* 3D cube */
+
+        .cube {
+
+            position: absolute;
+
+            width: 80px;
+            height: 80px;
+
+            left: 50px;
+            top: 100px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #30d9ff,
+                    #5d2cff
+                );
+
+            transform:
+                rotate(25deg)
+                skew(-5deg);
+
+            border-radius: 12px;
+
+            box-shadow:
+                20px 20px 0 rgba(88, 33, 220, .35),
+                0 0 40px rgba(0, 174, 255, .5);
+
+            animation:
+                cubeFloat 7s ease-in-out infinite;
+        }
+
+
+        /* =========================
+           FLOATING DOTS
+        ========================== */
+
+        .dot {
+
+            position: absolute;
+
+            width: 8px;
+            height: 8px;
+
+            background: #42d9ff;
+
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 15px #42d9ff;
+
+            animation:
+                float 5s infinite ease-in-out;
+        }
+
+        .dot1 {
+            top: 20%;
+            left: 25%;
+        }
+
+        .dot2 {
+            top: 70%;
+            right: 20%;
+            animation-delay: 1s;
+        }
+
+        .dot3 {
+            top: 30%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+
+        /* =========================
+           MAIN LOGIN CARD
+        ========================== */
+
+        .login-container {
+
+            width: 92%;
+            max-width: 420px;
+
+            padding: 35px;
+
+            position: relative;
+
+            border-radius: 28px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.13),
+                    rgba(255,255,255,.04)
+                );
+
+            border:
+                1px solid rgba(255,255,255,.25);
+
+            backdrop-filter:
+                blur(20px);
+
+            -webkit-backdrop-filter:
+                blur(20px);
+
+            box-shadow:
+
+                0 30px 80px
+                rgba(0,0,0,.45),
+
+                inset 0 1px 0
+                rgba(255,255,255,.25);
+
+            z-index: 10;
+
+            animation:
+                cardAppear .8s ease;
+        }
+
+
+        /* glowing border */
+
+        .login-container::before {
+
+            content: "";
+
+            position: absolute;
+
+            inset: -2px;
+
+            border-radius: 30px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #00d9ff,
+                    transparent 40%,
+                    #b52cff
+                );
+
+            z-index: -1;
+
+            opacity: .8;
+
+            filter: blur(1px);
+        }
+
+
+        /* =========================
+           LOGO
+        ========================== */
+
+        .logo {
+
+            text-align: center;
+
+            margin-bottom: 8px;
+        }
+
+        .logo-icon {
+
+            width: 65px;
+            height: 65px;
+
+            margin: auto;
+
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            border-radius: 20px;
+
+            font-size: 38px;
+            font-weight: 900;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #19d9ff,
+                    #3155ff,
+                    #9c28ff
+                );
+
+            box-shadow:
+
+                0 10px 30px
+                rgba(28,123,255,.5),
+
+                inset 0 2px 5px
+                rgba(255,255,255,.4);
+
+            transform:
+                perspective(300px)
+                rotateX(5deg);
+
+            animation:
+                logoFloat 4s ease-in-out infinite;
+        }
+
+
+        .brand {
+
+            margin-top: 15px;
+
+            color: white;
+
+            font-size: 32px;
+
+            font-weight: 800;
+
+            letter-spacing: 5px;
+
+            text-shadow:
+                0 0 20px rgba(52,178,255,.6);
+        }
+
+        .tagline {
+
+            margin-top: 6px;
+
+            color: #aebfff;
+
+            font-size: 11px;
+
+            letter-spacing: 3px;
+        }
+
+
+        /* =========================
+           WELCOME
+        ========================== */
+
+        .welcome {
+
+            text-align: center;
+
+            margin-top: 28px;
+
+            margin-bottom: 25px;
+        }
+
+        .welcome h1 {
+
+            color: white;
+
+            font-size: 29px;
+
+            margin-bottom: 8px;
+        }
+
+        .welcome h1 span {
+
+            color: #38aaff;
+
+            text-shadow:
+                0 0 15px
+                rgba(40,170,255,.5);
+        }
+
+        .welcome p {
+
+            color: #aebce5;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           INPUT
+        ========================== */
+
+        .input-group {
+
+            position: relative;
+
+            margin-bottom: 17px;
+        }
+
+        .input-group .icon {
+
+            position: absolute;
+
+            left: 17px;
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            font-size: 20px;
+
+            color: #9dbbff;
+
+            z-index: 2;
+        }
+
+        input {
+
+            width: 100%;
+
+            height: 58px;
+
+            padding:
+                0 48px;
+
+            border-radius: 18px;
+
+            border:
+                1px solid rgba(65,156,255,.55);
+
+            outline: none;
+
+            color: white;
+
+            font-size: 15px;
+
+            background:
+                rgba(2,20,70,.65);
+
+            box-shadow:
+
+                inset 0 5px 15px
+                rgba(0,0,0,.25),
+
+                0 5px 15px
+                rgba(0,0,0,.15);
+
+            transition:
+                .3s;
+        }
+
+        input::placeholder {
+
+            color: #9caed5;
+        }
+
+        input:focus {
+
+            border-color:
+                #25c8ff;
+
+            box-shadow:
+
+                0 0 20px
+                rgba(0,190,255,.25),
+
+                inset 0 5px 15px
+                rgba(0,0,0,.2);
+        }
+
+
+        /* password eye */
+
+        .eye {
+
+            position: absolute;
+
+            right: 17px;
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            cursor: pointer;
+
+            color: #9dbbff;
+
+            font-size: 18px;
+        }
+
+
+        /* =========================
+           LOGIN BUTTON
+        ========================== */
+
+        .login-btn {
+
+            width: 100%;
+
+            height: 58px;
+
+            border: none;
+
+            border-radius: 30px;
+
+            margin-top: 8px;
+
+            color: white;
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #079cff,
+                    #3b5bff,
+                    #a72cff
+                );
+
+            box-shadow:
+
+                0 10px 30px
+                rgba(48,77,255,.45),
+
+                inset 0 2px 3px
+                rgba(255,255,255,.35);
+
+            transition:
+                .25s;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+        .login-btn:hover {
+
+            transform:
+                translateY(-3px);
+
+            box-shadow:
+
+                0 15px 40px
+                rgba(72,79,255,.65);
+        }
+
+        .login-btn:active {
+
+            transform:
+                translateY(1px)
+                scale(.98);
+        }
+
+
+        .login-btn::after {
+
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: -100%;
+
+            width: 50%;
+            height: 100%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255,255,255,.4),
+                    transparent
+                );
+
+            transform:
+                skewX(-20deg);
+
+            animation:
+                shine 3s infinite;
+        }
+
+
+        /* =========================
+           MESSAGE
+        ========================== */
+
+        #message {
+
+            min-height: 22px;
+
+            margin-top: 17px;
+
+            text-align: center;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            transition:
+                .3s;
+        }
+
+        .error {
+
+            color: #ff718b;
+
+            text-shadow:
+                0 0 10px
+                rgba(255,60,100,.3);
+        }
+
+        .success {
+
+            color: #38ffb0;
+
+            text-shadow:
+                0 0 10px
+                rgba(0,255,150,.4);
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================== */
+
+        .secure {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 10px;
+
+            margin-top: 25px;
+
+            color: #a8b9df;
+
+            font-size: 13px;
+        }
+
+        .register-link {
+            margin-top: 18px;
+            text-align: center;
+            color: #aebce5;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #46e6c0;
+            font: inherit;
+            font-weight: 700;
+            text-decoration: none;
+            padding: 5px;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .secure::before,
+        .secure::after {
+
+            content: "";
+
+            width: 55px;
+
+            height: 1px;
+
+            background:
+                rgba(170,190,230,.3);
+        }
+
+        .lock {
+
+            color: #39bfff;
+
+            font-size: 18px;
+        }
+
+
+        /* =========================
+           ANIMATIONS
+        ========================== */
+
+        @keyframes float {
+
+            0%,100% {
+                transform:
+                    translateY(0px);
+            }
+
+            50% {
+                transform:
+                    translateY(-25px);
+            }
+        }
+
+        @keyframes cubeFloat {
+
+            0%,100% {
+                transform:
+                    rotate(25deg)
+                    translateY(0);
+            }
+
+            50% {
+                transform:
+                    rotate(45deg)
+                    translateY(-30px);
+            }
+        }
+
+        @keyframes logoFloat {
+
+            0%,100% {
+                transform:
+                    translateY(0);
+            }
+
+            50% {
+                transform:
+                    translateY(-6px);
+            }
+        }
+
+        @keyframes cardAppear {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    perspective(800px)
+                    rotateX(12deg)
+                    translateY(40px);
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    perspective(800px)
+                    rotateX(0)
+                    translateY(0);
+            }
+        }
+
+        @keyframes shine {
+
+            0% {
+                left: -100%;
+            }
+
+            40%,100% {
+                left: 150%;
+            }
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================== */
+
+        @media (max-width: 480px) {
+
+            .login-container {
+
+                padding:
+                    27px 22px;
+
+                border-radius:
+                    24px;
+            }
+
+            .brand {
+
+                font-size: 28px;
+            }
+
+            .welcome h1 {
+
+                font-size: 26px;
+            }
+
+            .cube {
+
+                left: -25px;
+            }
+
+            .circle.two {
+
+                left: -30px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- Background 3D objects -->
+
+    <div class="circle one"></div>
+
+    <div class="circle two"></div>
+
+    <div class="cube"></div>
+
+    <div class="dot dot1"></div>
+    <div class="dot dot2"></div>
+    <div class="dot dot3"></div>
+
+
+    <!-- LOGIN CARD -->
+
+    <div class="login-container">
+
+
+        <!-- LOGO -->
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                N
+            </div>
+
+            <div class="brand">
+                NOVACOIN
+            </div>
+
+            <div class="tagline">
+                TRADE • TRACK • GROW
+            </div>
+
+        </div>
+
+
+        <!-- WELCOME -->
+
+        <div class="welcome">
+
+            <h1>
+                Welcome <span>Back</span>
+            </h1>
+
+            <p>
+                Sign in to your NOVACOIN account
+            </p>
+
+        </div>
+
+
+        <!-- LOGIN ID -->
+
+        <div class="input-group">
+
+            <span class="icon">👤</span>
+
+            <input
+                type="text"
+                id="loginId"
+                placeholder="Login ID"
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <!-- PASSWORD -->
+
+        <div class="input-group">
+
+            <span class="icon">🔒</span>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Password"
+            >
+
+            <span
+                class="eye"
+                onclick="togglePassword()"
+                id="eye">
+
+                👁
+
+            </span>
+
+        </div>
+
+
+        <!-- LOGIN -->
+
+        <button
+            class="login-btn"
+            onclick="login()">
+
+            → &nbsp; Login
+
+        </button>
+
+
+        <!-- MESSAGE -->
+
+        <div
+            id="message">
+        </div>
+
+
+        <!-- REGISTER LINK: registration page is maintained separately -->
+        <div class="register-link">
+            New to NOVACOIN?
+            <a href="register.html">Create account</a>
+        </div>
+
+        <!-- SECURE -->
+
+        <div class="secure">
+
+            <span class="lock">
+                🔐
+            </span>
+
+            Secure Access
+
+        </div>
+
+
+    </div>
+
+
+<script>
+
+
+    /* ==================================
+       OFFLINE USERS
+       ================================== */
+
+    const users = {
+
+        "RITIK123": {
+            password: "Ritik@123",
+            link: "https://rishavi1.github.io/nova-coin/all/ritik/index.html"
+        },
+
+        "PRITHVI123": {
+            password: "Prithvi@123",
+            link: "https://rishavi1.github.io/nova-coin/all/prithvi/index.html"
+        },
+
+        "RISHAV123": {
+            password: "Rishav@123",
+            link: "https://rishavi1.github.io/nova-coin/all/rishav/index.html"
+        },
+
+       
+    };
+
+
+    /* ==================================
+       LOGIN
+       ================================== */
+
+    function login() {
+
+        const id =
+            document
+            .getElementById("loginId")
+            .value
+            .trim()
+            .toLowerCase();
+
+        const password =
+            document
+            .getElementById("password")
+            .value;
+
+        const message =
+            document
+            .getElementById("message");
+
+
+        /*
+         * Empty ID
+         */
+
+        if (id === "") {
+
+            message.innerHTML =
+                "Please enter Login ID";
+
+            message.className =
+                "error";
+
+            return;
+        }
+
+
+        /*
+         * Empty password
+         */
+
+        if (password === "") {
+
+            message.innerHTML =
+                "Please enter password";
+
+            message.className =
+                "error";
+
+            return;
+        }
+
+
+        /*
+         * USER DOES NOT EXIST
+         */
+
+        const savedUsers = JSON.parse(localStorage.getItem("novacoinUsers") || "{}");
+        const accountUsers = { ...users, ...savedUsers };
+
+        if (!accountUsers[id]) {
+
+            message.innerHTML =
+                "⚠ Account does not exist";
+
+            message.className =
+                "error";
+
+            return;
+        }
+
+
+        /*
+         * WRONG PASSWORD
+         */
+
+        if (accountUsers[id].password !== password) {
+
+            message.innerHTML =
+                "⚠ Password is wrong";
+
+            message.className =
+                "error";
+
+            return;
+        }
+
+
+        /*
+         * LOGIN SUCCESS
+         */
+
+        message.innerHTML =
+            "✓ Login successful";
+
+        message.className =
+            "success";
+
+
+        /*
+         * Redirect
+         */
+
+        setTimeout(function() {
+
+            window.location.href =
+                accountUsers[id].link || "index.html";
+
+        }, 700);
+
+    }
+
+
+    /* ==================================
+       SHOW / HIDE PASSWORD
+       ================================== */
+
+    function togglePassword() {
+
+        const password =
+            document.getElementById("password");
+
+        const eye =
+            document.getElementById("eye");
+
+
+        if (password.type === "password") {
+
+            password.type = "text";
+
+            eye.innerHTML = "🙈";
+
+        } else {
+
+            password.type = "password";
+
+            eye.innerHTML = "👁";
+
+        }
+
+    }
+
+
+    /* ==================================
+       ENTER KEY LOGIN
+       ================================== */
+
+    document.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                login();
+
+            }
+
+        }
+    );
+
+</script>
+
+
+</body>
+
+</html>
+```
