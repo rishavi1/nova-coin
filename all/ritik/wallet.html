@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NOVACOIN | Wallet Activity</title>
+<style>
+:root{color-scheme:dark;--bg:#080d18;--panel:#111a2b;--line:#263550;--text:#edf3ff;--muted:#9aabc6;--accent:#6be0b1;--blue:#7aa7ff;--danger:#ff7e8b}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:28px;background:radial-gradient(ellipse at top,#15284a 0%,#080d18 58%);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text)}
+main{width:min(100%,1000px);margin:0 auto}.top{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:24px}.brand{font-size:12px;font-weight:800;letter-spacing:.22em;color:var(--accent)}h1{margin:10px 0 5px;font-size:30px;letter-spacing:-.04em}.sub{margin:0;color:var(--muted);font-size:14px;line-height:1.6}.actions{display:flex;gap:10px;flex-wrap:wrap}a.button,button{display:inline-block;border:1px solid var(--line);border-radius:11px;padding:11px 15px;background:#17243a;color:var(--text);font-weight:700;text-decoration:none;cursor:pointer;font-size:13px}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:22px}.card{border:1px solid var(--line);border-radius:18px;background:rgba(17,26,43,.96);padding:21px}.label{font-size:12px;color:var(--muted)}.value{font-size:29px;font-weight:800;margin-top:9px;font-variant-numeric:tabular-nums}.hint{margin-top:7px;font-size:12px;color:var(--muted)}.panel{border:1px solid var(--line);border-radius:18px;background:rgba(17,26,43,.96);overflow:hidden}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:20px;border-bottom:1px solid var(--line)}h2{font-size:17px;margin:0}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:680px}th,td{text-align:left;padding:15px 18px;border-bottom:1px solid #26355088;font-size:13px}th{color:var(--muted);font-weight:600;background:#0b1220}td{font-variant-numeric:tabular-nums}.type{display:inline-block;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:800}.deposit{background:#163a32;color:#6be0b1}.withdraw{background:#421f2a;color:#ff9cab}.muted{color:var(--muted)}.empty{padding:34px;text-align:center;color:var(--muted);line-height:1.7}.note{margin:18px 2px;color:var(--muted);font-size:12px;line-height:1.7}
+@media(max-width:560px){body{padding:16px}.value{font-size:25px}}
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div><div class="brand">NOVACOIN / WALLET</div><h1>Wallet activity</h1><p class="sub">Review account balance and wallet activity.</p></div>
+    <nav class="actions"><a class="button" href="index.html">Dashboard</a><button id="refresh" type="button">Refresh</button></nav>
+  </header>
+  <section class="cards">
+    <div class="card"><div class="label">Current wallet balance</div><div class="value" id="wallet-balance">$0.00</div><div class="hint">Current account balance</div></div>
+    <div class="card"><div class="label">Total funds added</div><div class="value" id="total-added">$0.00</div><div class="hint">Manual credits recorded</div></div>
+    <div class="card"><div class="label">Total funds withdrawn</div><div class="value" id="total-withdrawn">$0.00</div><div class="hint">Manual reductions recorded</div></div>
+  </section>
+  <section class="panel">
+    <div class="panel-head"><h2>Transaction history</h2><span class="muted" id="transaction-count">0 records</span></div>
+    <div class="table-wrap"><table><thead><tr><th>Activity</th><th>Amount</th><th>Balance after</th><th>Date &amp; time</th><th>Status</th></tr></thead><tbody id="history-body"></tbody></table></div>
+    <div id="empty" class="empty" hidden>No wallet transactions yet. Wallet activity will appear here when transactions are recorded.</div>
+  </section>
+  <p class="note">Account activity is stored in this browser for this website.</p>
+</main>
+<script type="module" src="firebase-sync.js"></script>
+<script>
+(async () => {
+  const FOLDER_SCOPE=window.location.pathname.slice(0,window.location.pathname.lastIndexOf('/')+1)||'/';
+  const KEY='novacoin-account-v1:'+FOLDER_SCOPE;
+  const HISTORY_KEY='novacoin-wallet-transactions:'+FOLDER_SCOPE;
+  const CHANNEL='novacoin-funds-live:'+FOLDER_SCOPE;
+  const $=id=>document.getElementById(id);
+  const money=n=>'$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  // Module scripts start asynchronously; wait briefly for firebase-sync.js to expose its API.
+  const waitForFirebase = async () => {
+    const start = Date.now();
+    while (!window.NOVACOIN_FIREBASE_READY && Date.now() - start < 8000)
+      await new Promise(resolve => setTimeout(resolve, 50));
+    if (window.NOVACOIN_FIREBASE_READY) await window.NOVACOIN_FIREBASE_READY;
+  };
+  try { await waitForFirebase(); } catch(e) { console.error('Firebase sync unavailable; using local wallet data:', e); }
+  function readState(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){return {}}}
+  function readBalance(){const s=readState();return Number.isFinite(Number(s.balance))?Number(s.balance):0}
+  function readHistory(){try{const h=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');return Array.isArray(h)?h:[]}catch(e){return []}}
+  async function saveAccount(balance){const state=readState();state.balance=balance;state.updatedAt=Date.now();state.accountLocked=balance<1;localStorage.setItem(KEY,JSON.stringify(state));try{await window.NOVACOIN_FIREBASE?.saveAccountState(state)}catch(e){console.error(e)};try{if('BroadcastChannel'in window){const c=new BroadcastChannel(CHANNEL);c.postMessage({type:'funds-updated'});c.close()}}catch(e){}}
+  async function record(type,amount,balanceAfter){const records=readHistory();records.unshift({type,amount,balanceAfter,timestamp:new Date().toISOString()});localStorage.setItem(HISTORY_KEY,JSON.stringify(records));try{await window.NOVACOIN_FIREBASE?.saveTransactions(records)}catch(e){console.error(e)}}
+  function render(){const records=readHistory();if(!$('wallet-balance'))return;
+    // One-time repair for legacy records where deposits were logged but account balance stayed at zero.
+    const state=readState();
+    if(!Number.isFinite(Number(state.updatedAt)) && Number(state.balance||0)===0 && records.length){
+      const newest=[...records].sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp))[0];
+      const ledgerNet=records.reduce((sum,x)=>sum+(x.type==='deposit'?1:-1)*Number(x.amount||0),0);
+      if(newest && newest.type==='deposit' && Number(newest.balanceAfter)>0 && ledgerNet>0){
+        state.balance=Number(newest.balanceAfter);state.updatedAt=Date.now();state.accountLocked=state.balance<1;
+        localStorage.setItem(KEY,JSON.stringify(state));
+        try{window.NOVACOIN_FIREBASE?.saveAccountState(state)}catch(e){console.error(e)}
+      }
+    }$('wallet-balance').textContent=money(readBalance());$('total-added').textContent=money(records.filter(x=>x.type==='deposit').reduce((s,x)=>s+Number(x.amount||0),0));$('total-withdrawn').textContent=money(records.filter(x=>x.type==='withdraw').reduce((s,x)=>s+Number(x.amount||0),0));$('transaction-count').textContent=records.length+' record'+(records.length===1?'':'s');$('history-body').innerHTML=records.map(x=>{const isAdd=x.type==='deposit';const date=new Date(x.timestamp);const dateText=Number.isNaN(date.getTime())?'—':date.toLocaleString();return `<tr><td><span class="type ${isAdd?'deposit':'withdraw'}">${isAdd?'FUNDS ADDED':'FUNDS WITHDRAWN'}</span><div style="margin-top:7px">${isAdd?'Funds added':'Funds withdrawn'}</div></td><td>${isAdd?'+':'−'}${money(x.amount)}</td><td>${money(x.balanceAfter)}</td><td>${dateText}</td><td><span class="muted">Completed</span></td></tr>`}).join('');$('empty').hidden=records.length>0;}
+  async function transact(type){const amount=Number($('fund-amount').value);const current=readBalance();const msg=$('fund-message');if(!Number.isFinite(amount)||amount<=0){msg.textContent='Enter an amount greater than zero.';return}if(type==='withdraw'&&amount>current){msg.textContent='Insufficient balance for this withdrawal.';return}const next=type==='deposit'?current+amount:current-amount;await saveAccount(next);await record(type,amount,next);$('fund-amount').value='';msg.textContent=type==='deposit'?'Funds added to the shared demo account.':'Funds withdrawn from the shared demo account.';render();}
+  $('refresh').addEventListener('click',render);
+  if($('add-funds'))$('add-funds').addEventListener('click',()=>transact('deposit'));
+  if($('withdraw-funds'))$('withdraw-funds').addEventListener('click',()=>transact('withdraw'));
+  window.addEventListener('storage',e=>{if(e.key===KEY||e.key===HISTORY_KEY)render()});
+  window.addEventListener('novacoin-remote-state',render);window.addEventListener('novacoin-remote-transactions',render);
+  try{if('BroadcastChannel'in window){const channel=new BroadcastChannel(CHANNEL);channel.onmessage=render}}catch(e){}
+  render();setInterval(render,1500);
+})();
+</script></body>
+</html>
