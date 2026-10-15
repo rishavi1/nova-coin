@@ -1,0 +1,31 @@
+NOVACOIN Firebase shared demo data setup
+========================================
+
+This package keeps the existing HTML/CSS/JS site and adds Firebase Realtime Database sync for the shared demo account and wallet transaction history.
+
+BEFORE DEPLOYING
+1. In Firebase Console for project novacoin-176e4, open Build > Authentication > Sign-in method.
+2. Enable Anonymous sign-in.
+3. Open Realtime Database > Rules and publish the rules below:
+
+{
+  "rules": {
+    "sharedDemo": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    ".read": false,
+    ".write": false
+  }
+}
+
+4. Upload the CONTENTS of the novatrade_website folder to the same GitHub Pages repository/folder that serves your site. Ensure firebase-sync.js is uploaded alongside app.js and the HTML files.
+5. Open the site, wait a few seconds, then refresh. Deposit/withdraw and trade actions will sync to other visitors.
+
+IMPORTANT SECURITY LIMITATION
+This is a school/demo trading simulation. Anonymous authentication prevents unauthenticated database access, but anyone who visits the site can anonymously authenticate and edit the sharedDemo records. Therefore balances and trades are NOT secure or tamper-proof. Do not use this for real money, private user data, or a real trading service. Secure multi-user money-like records require a trusted backend and server-side validation. All visitors intentionally share one demo account; they do not get separate private accounts.
+
+The Firebase client config is public client configuration, not an admin credential. Never place service-account JSON or private server keys in this website.
+
+WALLET BALANCE FIX
+The wallet and add-funds pages now load firebase-sync.js too, wait for Firebase initialization, and repair legacy records where a deposit was recorded but the account balance remained zero. The repair only applies when the old account has no updatedAt timestamp; subsequent genuine trading balance changes are preserved.
