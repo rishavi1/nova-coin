@@ -1,0 +1,33 @@
+NOVACOIN Firebase shared demo data setup
+========================================
+
+This package keeps the existing HTML/CSS/JS site and syncs demo data through Firebase Realtime Database. Each account is namespaced by the folder containing the page: /all/rishav/ uses users/rishav, /all/prithvi/ uses users/prithvi. The same folder/account syncs across devices; different folders do not share balance or trade history.
+
+BEFORE DEPLOYING
+1. In Firebase Console for project novacoin-176e4, open Build > Authentication > Sign-in method.
+2. Enable Anonymous sign-in.
+3. Open Realtime Database > Rules and publish the rules below:
+
+{
+  "rules": {
+    "users": {
+      "$folder": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    ".read": false,
+    ".write": false
+  }
+}
+
+4. Upload the CONTENTS of the novatrade_website folder to the same GitHub Pages repository/folder that serves your site. Ensure firebase-sync.js is uploaded alongside app.js and the HTML files.
+5. Open the site, wait a few seconds, then refresh. Deposit/withdraw and trade actions sync across devices that open the SAME folder URL. Example: /all/rishav/ shares with other devices opening /all/rishav/; /all/prithvi/ is a separate account.
+
+IMPORTANT SECURITY LIMITATION
+This is a school/demo trading simulation. Anonymous authentication prevents unauthenticated database access, but any visitor can anonymously authenticate and may modify data under any folder namespace. Folder names separate the displayed data logically; they are NOT secure user authentication. Do not use this for real money, private user data, or a real trading service. For truly private accounts, add Firebase email/password or another sign-in method and rules tied to auth.uid, and use a trusted backend for balance-changing operations.
+
+The Firebase client config is public client configuration, not an admin credential. Never place service-account JSON or private server keys in this website.
+
+WALLET BALANCE FIX
+The wallet and add-funds pages load firebase-sync.js too. Data paths are folder-specific, so each folder has its own account and transaction history. If the old site stored a balance only in localStorage, that old data may need to be deposited/reconciled into the corresponding Firebase folder once.
